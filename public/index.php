@@ -11,7 +11,6 @@
     <title>Global Photo Feed</title>
 </head>
 <body>
-<?php $_ENV['DB_USER'] ?>
 
 <!--Simple Navbar-->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
