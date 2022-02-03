@@ -1,0 +1,4 @@
+DB_HOST=localhost
+DB_NAME=james_php_photo_feed
+DB_USER=root
+DB_PASS=root

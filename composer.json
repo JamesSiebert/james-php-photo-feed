@@ -1,0 +1,6 @@
+{
+    "require": {
+        "vlucas/phpdotenv": "^5.4",
+        "ramsey/uuid": "^4.2"
+    }
+}
