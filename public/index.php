@@ -11,6 +11,7 @@
     <title>Global Photo Feed</title>
 </head>
 <body>
+<?php $_ENV['DB_USER'] ?>
 
 <!--Simple Navbar-->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -35,11 +36,57 @@
             <div class="card-body text-primary">
                 <h5 class="card-title mb-2">Public Photo Feed</h5>
                 <div class="mt-3 alert alert-info" role="alert">
-                    Share your favorite photos with people all over the world!
+                    Share your favourite photos with people all over the world!
                 </div>
                 <div>
                     <div id="post-list"></div>
 
+
+                    <script>
+
+                        <!-- TODO fix URL -->
+                        fetch('/api/post/read.php')
+                            .then(function (response) {
+                                return response.json();
+                            })
+                            .then(function (data) {
+                                appendData(data);
+                            })
+                            .catch(function (err) {
+                                console.log('error: ' + err);
+                            });
+
+                        function appendData(data) {
+
+                            // dump to console
+                            console.log(data.data);
+
+                            // Get list image list element
+                            const postContainer = document.getElementById("post-list");
+
+                            const postArray = data.data
+
+                            postArray.forEach((item) => {
+                                const div = document.createElement('div');
+
+                                div.innerHTML = `
+                                <div class='mb-3 card'>
+                                    <img src='images/${item.filename}' class='card-img-top' alt='User Image'>
+                                    <div class='card-body'>
+                                        <p class='card-text text-secondary'>
+                                            <b>Name:</b> ${item.name}<br>
+                                            <b>Description:</b> ${item.description}<br>
+                                            <b>Filename:</b> ${item.filename}<br>
+                                            <b>IP Address:</b> ${item.ip_address}<br>
+                                        </p>
+                                    </div>
+                                </div>
+                                `;
+
+                                postContainer.appendChild(div);
+                            })
+                        }
+                    </script>
 
                 </div>
             </div>

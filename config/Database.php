@@ -2,10 +2,11 @@
 
 // Allows the use of .env files
 declare(strict_types=1);
-require_once('../vendor/autoload.php');
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__, '.env'); // Path: /.env (root)
+require_once('../../vendor/autoload.php');
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__, '.env');
 $dotenv->load();
 $dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS']);
+
 
 class Database {
 
