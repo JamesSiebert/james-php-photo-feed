@@ -1,6 +1,7 @@
 {
     "require": {
         "vlucas/phpdotenv": "^5.4",
-        "ramsey/uuid": "^4.2"
+        "ramsey/uuid": "^4.2",
+        "ext-pdo": "*"
     }
 }

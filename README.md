@@ -1,143 +1,136 @@
+# Basic Image Uploader
 
+##### Using PHP Only 
 
+By James Siebert
 
 
-**Make sure to:**
 
-Comments
+#### Project source code
 
-Descriptions
+GitHub - https://github.com/JamesSiebert/james-php-photo-feed
 
-Use PSR - PHP Standards Recommendations
+**Deployment info**
+SQL migration file /migration.sql
+ENV for DB params /config/.env
 
-Time track - GitHub?
+------
 
+#### Improvements on my work
 
+- README.md is unfinished and rough.
+- Need to do further research into PSR so I write cleaner more standardised code - https://www.php-fig.org/psr/psr-2/
+- I need to research the specific permissions required on each file for deployment
+- Break code into smaller pieces.
+- Use .htaccess to redirect to /public/
+- Provide more detailed error feedback
 
+#### Future expansion and security considerations
 
+- The images table was intended to allow us to handle multiple resolution variations and image specific info.
+- Pagination should be used.
 
-#### Environmental Variables
+- Too many requests - implement throttling.
+- DDOS protection
+- Script execution time limits
 
-phpdotenv
 
 
 
-#### MySQL Migration File
 
+------
 
+### Deployment
 
-#### PUBLIC INDEX PAGE
+Launch EC2 Instance
 
-GET api/posts/read.php
+[LAMP on CentOS 7 by Classmethod product detail page on AWS Marketplace](http://aws.amazon.com/marketplace/pp/B09C7GKY4V?ref=cns_srchrow)
 
-JSON of all images
+https://cloudcookie.info/docs/aws-documentation/aws-lamp-on-centos-7/
 
-Show all images
+This LAMP Stack provides a ready to use and stable LAMP development environment optimized for CentOS 7, featuring Apache 2.4, Maria DB 10.6, PHP 7.4 and phpMyAdmin 5.1.1.
 
-- Bootstrap 5
-- Later improvement - PAGINATION
 
 
+#### MySQL setup
 
-#### UPLOAD FORM
+get DB credentials
 
-USE CSRF
+```
+cat /home/centos/credentials
+```
 
-| Field                        | Value          |
-| ---------------------------- | -------------- |
-| Name (unique unless same IP) | My Tree        |
-| **Description**              | This is a tree |
-| **File** (.jpg or .png only) | my-file.jpg    |
+```
+////////////////////credentials info////////////////////
+--- phpMyAdmin
+----- Setting  : Success
+--- MariaDB
+----- User     : root
+----- Password : abc123
+////////////////////////////////////////////////////////
+```
 
+edit /config/.env
 
+```
+mysql --host=localhost --user=root --password=
+CREATE DATABASE james_php_photo_feed;
+quit
+```
 
-#### VALIDATION
+exit mysql
 
-name: REQUIRED - min & max length, no tags, no special chars
+```
+mysql -u root -p james_php_photo_feed < /var/www/html/migration.sql
+quit
+```
 
-desc: REQUIRED - min & max length, no tags, no special chars
+confirm data exists
 
-file: REQUIRED - mime type(jpg, png), min size(50kb), max size(10mb)
+```
+mysql --host=localhost --user=root --password=
+SHOW TABLES FROM james_php_photo_feed;
+quit
+```
 
-Check CSRF, Post size limits, too many attempts, upload timeouts, posted timestamp vs current time, CSRF expiry (for leaks)
+```
+mysql --host=localhost --user=root --password= james_php_photo_feed
+SELECT * FROM posts;
+SELECT * FROM posts;
+quit
+```
 
 
 
-**CHECK:**
+Composer install for UUID and dotenv packages
 
-Does name exist in posts table?
-YES -
-Does uploader_ip = post_ip?
-YES - Append current image to clean up list - Call UPDATE IMAGE
-NO - REJECT - response 'Please choose another name'
+```
+composer install
+```
 
-CREATE POST
 
 
+## Dev Notes
 
-#### Model
+#### .htaccess
 
-**Sanitise Data**
+.htaccess redirect (tested on local)
 
-**CreatePost** (name, description, file, image_uuid)
+```php
+# Redirect
+# site.com/index.php links to site.com/public/index.php
 
-​	**Create new Image** (imageName)
-​	returns Image UUID
+RewriteEngine On
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(?!public/(?:index\.php)?$) /public/index.php [L]
+```
 
-returns true / false
+#### Apache Permissions
 
+-- Needs checking
 
+chmod 755 -R /var/www/html/
 
-**UpdateImage**(post_id)
-
-​	deleteImageUUID = current image_id
-
-​	**Create new Image**(imageName)
-​	returns Image UUID
-
-​	Update post image UUID
-
-​	Delete Image (deleteImageUUID)
-​	Considerations - if failure - time delayed queue for backup purposes.
-
-returns true / false
-
-
-
-**ReadPosts**
-
-​	returns all posts, left join, order by updated_at
-
-
-
-**POST**
-
-| ID   | Name (Unique) | Desc           | IP            | IMG ID (FK)     | created_at | updated_at |
-| ---- | ------------- | -------------- | ------------- | --------------- | ---------- | ---------- |
-| 1    | Park          | this is a park | 123.123.123.1 | abc-123-abc-123 | dateTime   | dateTime   |
-| 2    | Tree          | this is a tree | 123.123.123.2 | abc-123-abc-456 | dateTime   | dateTime   |
-|      |               |                |               |                 |            |            |
-
-
-
-**IMAGE**
-
-- Consideration for resolution and thumbs, exif reads also possible if needed.
-
-| ID (UUID)       | full                | created_at | updated_at |
-| --------------- | ------------------- | ---------- | ---------- |
-| abc-123-abc-123 | abc-123-abc-123.jpg | dateTime   | dateTime   |
-| abc-123-abc-456 | abc-123-abc-123.jpg | dateTime   | dateTime   |
-
-
-
-**Future Considerations**
-
-Script run timeouts
-
-Too many uploads / throttling
-
-Request throttling DDOS
-
-Automated code checks for standard coding practices PSR
-example https://www.php-fig.org/psr/psr-2/
+For: models, api, public/image, public, config(required)
