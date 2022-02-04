@@ -20,20 +20,20 @@ class CSRF
         return $token;
     }
 
-//    public static function createTokenWithField()
-//    {
-//        // Generate token
-//        $token = bin2hex(random_bytes(32));
-//
-//        // Save in session
-//        $_SESSION['csrf-token'] = $token;
-//
-//        // Generate and save token expiry
-//        $_SESSION['csrf-token-expire'] = time() + 60; // 1hr
-//
-//        // Create hidden field - NOTE: token is generated on SUBMIT not form creation
-//        echo "<input type='hidden' name='csrf-token' value='$token' />";
-//    }
+    public static function createTokenWithField()
+    {
+        // Generate token
+        $token = bin2hex(random_bytes(32));
+
+        // Save in session
+        $_SESSION['csrf-token'] = $token;
+
+        // Generate and save token expiry
+        $_SESSION['csrf-token-expire'] = time() + 60; // 1hr
+
+        // Create hidden field - NOTE: token is generated on SUBMIT not form creation
+        echo "<input type='hidden' name='csrf-token' value='$token' />";
+    }
 
     public static function validateToken($token, $expire): bool
     {

@@ -41,11 +41,11 @@ if (CSRF::validateToken($_POST['csrf-token'], $_SESSION['csrf-token-expire'])) {
     $imageFileType = strtolower(pathinfo($target_file_original,PATHINFO_EXTENSION));
     $target_file_name = $imageUUID . '.' . $imageFileType;
     $target_file = $target_dir .  $target_file_name;// destination file UUID.jpg
-    $uploadOk = 1;
+    $uploadOk = 0;// by setting 0 not 1, prevents html hack or submit button rename.
 
     // Check if image file is an actual image or fake image
     if(isset($_POST["submit"])) {
-        $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+        $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]); // checks img W H etc - False if no data
         if($check !== false) {
             echo "File is an image - " . $check["mime"] . ".";
             $uploadOk = 1;
